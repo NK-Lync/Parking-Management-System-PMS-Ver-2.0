@@ -1,4 +1,4 @@
-# Parking Management System (PMS) Ver 2.0
+# Parking Management System (PMS) Ver 2.0.36
 
 He thong quan ly bai do xe su dung ASP.NET Core MVC + SQL Server.
 
