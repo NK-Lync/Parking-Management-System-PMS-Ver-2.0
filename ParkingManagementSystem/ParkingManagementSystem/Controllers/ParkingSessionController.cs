@@ -12,10 +12,12 @@ namespace ParkingManagementSystem.Controllers
     public class ParkingSessionController : Controller
     {
         private readonly ParkingDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public ParkingSessionController(ParkingDbContext context)
+        public ParkingSessionController(ParkingDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         private static string NormalizePlate(string? plate)
@@ -650,11 +652,20 @@ namespace ParkingManagementSystem.Controllers
             {
                 if (string.IsNullOrEmpty(model.Image)) return Json(new { success = false });
                 var bytes = Convert.FromBase64String(model.Image.Contains(',') ? model.Image.Split(',')[1] : model.Image);
+                var plateApiToken = Environment.GetEnvironmentVariable("PLATE_RECOGNIZER_TOKEN")
+                    ?? _configuration["PlateRecognizer:ApiToken"];
+                var plateApiUrl = _configuration["PlateRecognizer:ApiUrl"] ?? "https://api.platerecognizer.com/v1/plate-reader/";
+
+                if (string.IsNullOrWhiteSpace(plateApiToken))
+                {
+                    return Json(new { success = false, message = "Missing plate recognizer API token." });
+                }
+
                 using var client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Authorization", "Token 3f34127e844dcaf6751e1c7ec081c7e8db504692");
+                client.DefaultRequestHeaders.Add("Authorization", $"Token {plateApiToken}");
                 var content = new MultipartFormDataContent();
                 content.Add(new ByteArrayContent(bytes), "upload", "plate.jpg");
-                var res = await client.PostAsync("https://api.platerecognizer.com/v1/plate-reader/", content);
+                var res = await client.PostAsync(plateApiUrl, content);
                 dynamic result = Newtonsoft.Json.JsonConvert.DeserializeObject(await res.Content.ReadAsStringAsync());
                 if (result.results.Count > 0)
                 {
