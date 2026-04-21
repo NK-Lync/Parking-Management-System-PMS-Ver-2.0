@@ -1,0 +1,86 @@
+@model IEnumerable<ParkingManagementSystem.ViewModels.ParkingZoneSummaryViewModel>
+@{
+    ViewData["Title"] = "Qu&#7843;n L&#253; Zone";
+}
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0 fw-bold"><i class="fa fa-plus-circle me-2"></i>T&#7841;o Zone M&#7899;i</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateZone" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">T&#234;n zone</label>
+                        <input type="text" name="zoneName" class="form-control" placeholder="VD: A1" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">S&#7889; v&#7883; tr&#237; ban &#273;&#7847;u</label>
+                        <input type="number" name="slotCount" class="form-control" min="1" value="10" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">T&#7841;o zone</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold text-dark"><i class="fa fa-layer-group me-2 text-primary"></i>Danh S&#225;ch Zone</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="small text-uppercase text-muted">
+                            <th>Zone</th>
+                            <th>T&#7893;ng Slot</th>
+                            <th>&#272;ang Chi&#7871;m</th>
+                            <th>C&#242;n Tr&#7889;ng</th>
+                            <th>&#272;i&#7873;u Ch&#7881;nh S&#7913;c Ch&#7913;a</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var zone in Model)
+                            {
+                                <tr>
+                                    <td><span class="badge bg-info text-dark">@zone.ZoneName</span></td>
+                                    <td class="fw-bold">@zone.TotalSlots</td>
+                                    <td>@zone.OccupiedSlots</td>
+                                    <td>@zone.AvailableSlots</td>
+                                    <td>
+                                        <form asp-action="UpdateCapacity" method="post" class="d-flex gap-2">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="zoneName" value="@zone.ZoneName" />
+                                            <input type="number" class="form-control form-control-sm" name="newCapacity" value="@zone.TotalSlots" min="1" required />
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">L&#432;u</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Ch&#432;a c&#243; zone n&#224;o. H&#227;y t&#7841;o zone &#273;&#7847;u ti&#234;n.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

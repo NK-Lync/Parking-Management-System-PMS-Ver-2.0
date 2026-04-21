@@ -1,0 +1,90 @@
+﻿@model IEnumerable<ParkingManagementSystem.Models.VehicleType>
+@{
+    ViewData["Title"] = "Cấu hình bảng giá";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    .action-buttons .btn-action {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 500;
+        border: none;
+        transition: all 0.25s ease;
+    }
+
+    /* EDIT */
+    .btn-edit {
+        background: rgba(13,110,253,0.1);
+        color: #0d6efd;
+    }
+
+        .btn-edit:hover {
+            background: #0d6efd;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13,110,253,0.3);
+        }
+
+    /* DELETE */
+    .btn-delete {
+        background: rgba(220,53,69,0.1);
+        color: #dc3545;
+    }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220,53,69,0.3);
+        }
+
+    /* ICON */
+    .btn-action i {
+        font-size: 15px;
+    }
+</style>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold m-0"><i class="fa fa-tags me-2 text-primary"></i> CẤU HÌNH BẢNG GIÁ</h4>
+    <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus me-1"></i> Thêm Loại Xe</a>
+</div>
+
+<div class="row g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center p-4">
+                <div class="mb-3">
+                    <i class="fa @(item.TypeName.Contains("Ô tô") ? "fa-car" : "fa-motorcycle") fa-3x text-primary opacity-25"></i>
+                </div>
+                <h5 class="fw-bold">@item.TypeName</h5>
+                <h3 class="text-primary fw-bold my-3">@item.PricePerHour.ToString("N0") <small>đ/h</small></h3>
+                <div class="d-flex justify-content-center gap-2 action-buttons">
+
+                    <!-- EDIT -->
+                    <a asp-action="Edit" asp-route-id="@item.TypeId"
+                           class="btn btn-action btn-edit">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Sửa</span>
+                    </a>
+
+                    <!-- DELETE -->
+                    <form asp-action="Delete" asp-route-id="@item.TypeId" method="post"
+                          onsubmit="return confirm('Bạn có chắc muốn xóa loại xe này?');">
+
+                        <button type="submit"
+                                class="btn btn-action btn-delete">
+                            <i class="bi bi-trash"></i>
+                            <span>Xóa</span>
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
